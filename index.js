@@ -1,3 +1,6 @@
+require('dotenv').config()
+console.log(process.env)
+
 // Dependencies
 import fs from "fs/promises";
 // const css = require('css');
