@@ -1,8 +1,29 @@
 // Dependencies
-const fs = require("fs/promises")
+import fs from "fs/promises";
+// const css = require('css');
+import CJS3 from "CJS3";
 
 // Data
-let css = `/* css */`;
+// let cssString = `/* css */
+// * {
+//   box-sizing: border-box;
+// }
+
+// body {
+//   margin: 0;
+//   padding: 0;
+// }
+// `;
+
+let cssString = new CJS3({
+  "*": {
+    boxSizing: "border-box" 
+  },
+  "body": {
+    margin: 0,
+    padding: 0
+  }
+})
 
 
 // Classes 
@@ -12,7 +33,7 @@ class FigmaObject {
   }
 
   outputCSS() {
-    fs.writeFile("output/style.css", css).then(() => {
+    fs.writeFile("output/style.css", cssString).then(() => {
       console.log("CSS successfully generated.")
     })
   }
@@ -20,9 +41,11 @@ class FigmaObject {
 }
 
 // Functions
+
 const init = function() {
   const figma = new FigmaObject("hats");
   figma.outputCSS();
+  console.log(cssString)
 }
 
 
