@@ -1,5 +1,6 @@
 {
     "dependencies": {
+        "axios": "^0.26.1",
         "cjs3": "^1.2.9",
         "css": "^3.0.0",
         "dotenv": "^16.0.0"
@@ -8,7 +9,6 @@
     "description": "Generate a skeleton css framework from a Figma document",
     "version": "1.0.0",
     "main": "index.js",
-    "type": "module",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },

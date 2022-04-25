@@ -2,37 +2,41 @@ require('dotenv').config()
 console.log(process.env)
 
 // Dependencies
-import fs from "fs/promises";
+const fs = require("fs/promises");
 // const css = require('css');
-import CJS3 from "CJS3";
+const axios = require("axios");
 
 // Data
-// let cssString = `/* css */
-// * {
-//   box-sizing: border-box;
-// }
+let cssString = `/* css */
+* {
+  box-sizing: border-box;
+}
 
-// body {
-//   margin: 0;
-//   padding: 0;
-// }
-// `;
+body {
+  margin: 0;
+  padding: 0;
+}
+`;
 
-let cssString = new CJS3({
-  "*": {
-    boxSizing: "border-box" 
-  },
-  "body": {
-    margin: 0,
-    padding: 0
-  }
-})
 
 
 // Classes 
 class FigmaObject {
   constructor(options) {
 
+  }
+
+  async getFigmaObject() {
+   const { 
+     data: {
+      document: figmaObject
+      } 
+    } = await axios.get("https://api.figma.com/v1/files/CSrJ4mApf1CVbYka6GyN9N", {
+     headers: {
+      "X-Figma-Token": process.env.FIGMA_API_TOKEN
+     }
+   })
+   console.log(figmaObject);
   }
 
   outputCSS() {
@@ -48,6 +52,7 @@ class FigmaObject {
 const init = function() {
   const figma = new FigmaObject("hats");
   figma.outputCSS();
+  figma.getFigmaObject();
   console.log(cssString)
 }
 
