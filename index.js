@@ -36,7 +36,7 @@ class FigmaObject {
       "X-Figma-Token": process.env.FIGMA_API_TOKEN
      }
    })
-   console.log(figmaObject);
+   console.dir(figmaObject, { depth: null });
   }
 
   outputCSS() {
