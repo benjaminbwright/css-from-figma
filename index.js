@@ -36,7 +36,16 @@ class FigmaObject {
       "X-Figma-Token": process.env.FIGMA_API_TOKEN
      }
    })
-   console.dir(figmaObject, { depth: null });
+
+   this.figmaObject = figmaObject;
+   console.dir(this.figmaObject, { depth: null });
+  }
+
+  buildCSS() {
+    // go through the pages
+    this.figmaObject.children.forEach((page) => {
+      console.log(page.name)
+    });
   }
 
   outputCSS() {
@@ -49,10 +58,12 @@ class FigmaObject {
 
 // Functions
 
-const init = function() {
+const init = async function() {
   const figma = new FigmaObject("hats");
+  
   figma.outputCSS();
-  figma.getFigmaObject();
+  await figma.getFigmaObject();
+  figma.buildCSS();
   console.log(cssString)
 }
 
