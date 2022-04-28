@@ -23,7 +23,18 @@ body {
 // Classes 
 class FigmaObject {
   constructor(options) {
+    this.figmaOutput = {};
+    this.pages = [];
+    this.cssString = `/* css */
+* {
+  box-sizing: border-box;
+}
 
+body {
+  margin: 0;
+  padding: 0;
+}
+    `;
   }
 
   async getFigmaObject() {
@@ -37,19 +48,33 @@ class FigmaObject {
      }
    })
 
-   this.figmaObject = figmaObject;
-   console.dir(this.figmaObject, { depth: null });
+   this.figmaOutput = figmaObject;
+
+
+   console.dir(this.figmaOutput, { depth: null });
+
+   // go through the figma object and put all the pages in the pages array
+   this.figmaOutput.children.forEach((node) => {
+      if(node.type === "CANVAS") {
+        this.pages.push(node.name)
+      }
+  });
+
+   console.log(this.pages);
   }
 
   buildCSS() {
     // go through the pages
-    this.figmaObject.children.forEach((page) => {
-      console.log(page.name)
-    });
+    this.pages.forEach(page => {
+      this.cssString += `
+#${page.toLowerCase()} {}
+`
+    })
+    this.outputCSS();
   }
 
   outputCSS() {
-    fs.writeFile("output/style.css", cssString).then(() => {
+    fs.writeFile("output/style.css", this.cssString).then(() => {
       console.log("CSS successfully generated.")
     })
   }
@@ -61,7 +86,7 @@ class FigmaObject {
 const init = async function() {
   const figma = new FigmaObject("hats");
   
-  figma.outputCSS();
+  
   await figma.getFigmaObject();
   figma.buildCSS();
   console.log(cssString)
