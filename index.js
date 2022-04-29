@@ -55,8 +55,10 @@ body {
 
    // go through the figma object and put all the pages in the pages array
    this.figmaOutput.children.forEach((node) => {
-      if(node.type === "CANVAS") {
+      if (node.type === "CANVAS") {
         this.pages.push(node.name)
+      } else if (node.type === "COMPONENT") {
+        this.components.push(node.name);
       }
   });
 
