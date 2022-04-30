@@ -1,5 +1,4 @@
 require('dotenv').config()
-console.log(process.env)
 
 // Dependencies
 const fs = require("fs/promises");
@@ -18,13 +17,12 @@ body {
 }
 `;
 
-
-
 // Classes 
 class FigmaObject {
   constructor(options) {
     this.figmaOutput = {};
     this.pages = [];
+    this.components = [];
     this.cssString = `/* css */
 * {
   box-sizing: border-box;
@@ -37,42 +35,54 @@ body {
     `;
   }
 
-  async getFigmaObject() {
-   const { 
-     data: {
-      document: figmaObject
-      } 
-    } = await axios.get("https://api.figma.com/v1/files/CSrJ4mApf1CVbYka6GyN9N", {
-     headers: {
-      "X-Figma-Token": process.env.FIGMA_API_TOKEN
-     }
-   })
+  async fetchFigmaObject() {
+    const { 
+      data: {
+       document: figmaObject
+       } 
+     } = await axios.get("https://api.figma.com/v1/files/CSrJ4mApf1CVbYka6GyN9N", {
+      headers: {
+       "X-Figma-Token": process.env.FIGMA_API_TOKEN
+      }
+    });
 
-   this.figmaOutput = figmaObject;
+    this.figmaOutput = figmaObject;
+    console.dir(this.figmaOutput, { depth: null });
+  }
 
-
-   console.dir(this.figmaOutput, { depth: null });
-
-   // go through the figma object and put all the pages in the pages array
-   this.figmaOutput.children.forEach((node) => {
+  parseNodes(nodes) {
+    // go through the figma object and put all the pages in the pages array
+    nodes.forEach((node) => {
       if (node.type === "CANVAS") {
         this.pages.push(node.name)
       } else if (node.type === "COMPONENT") {
         this.components.push(node.name);
       }
-  });
 
-   console.log(this.pages);
+      if (node.children) {
+        this.parseNodes(node.children);
+      }
+    });
   }
 
-  buildCSS() {
+  async buildCSS() {
+    await this.fetchFigmaObject();
+    this.parseNodes(this.figmaOutput.children)
     // go through the pages
     this.pages.forEach(page => {
       this.cssString += `
 #${page.toLowerCase()} {}
 `
     })
+
+    this.components.forEach(component => {
+      this.cssString += `
+.${component.toLowerCase()} {}
+`
+    })
     this.outputCSS();
+    console.log(this.pages);
+    console.log(this.components);
   }
 
   outputCSS() {
@@ -86,10 +96,7 @@ body {
 // Functions
 
 const init = async function() {
-  const figma = new FigmaObject("hats");
-  
-  
-  await figma.getFigmaObject();
+  const figma = new FigmaObject("hats");;
   figma.buildCSS();
   console.log(cssString)
 }
