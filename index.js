@@ -5,17 +5,7 @@ const fs = require("fs/promises");
 // const css = require('css');
 const axios = require("axios");
 
-// Data
-let cssString = `/* css */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-}
-`;
+// Data 
 
 // Classes 
 class FigmaObject {
@@ -66,6 +56,8 @@ body {
   }
 
   async buildCSS() {
+    this.cssString += await fs.readFile(__dirname + "/css/normalize.css");
+    this.cssString += await fs.readFile(__dirname + "/css/skeleton.css");
     await this.fetchFigmaObject();
     this.parseNodes(this.figmaOutput.children)
     // go through the pages
@@ -98,7 +90,6 @@ body {
 const init = async function() {
   const figma = new FigmaObject("hats");;
   figma.buildCSS();
-  console.log(cssString)
 }
 
 
