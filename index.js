@@ -13,6 +13,7 @@ class FigmaObject {
     this.figmaOutput = {};
     this.pages = [];
     this.components = [];
+    this.textStyles = [];
     this.cssString = `/* css */
 * {
   box-sizing: border-box;
@@ -44,9 +45,11 @@ body {
     // go through the figma object and put all the pages in the pages array
     nodes.forEach((node) => {
       if (node.type === "CANVAS") {
-        this.pages.push(node.name)
+        this.pages.push(node)
       } else if (node.type === "COMPONENT") {
-        this.components.push(node.name);
+        this.components.push(node);
+      } else if (node.type === "TEXT") {
+        this.textStyles.push(node)
       }
 
       if (node.children) {
@@ -63,14 +66,37 @@ body {
     // go through the pages
     this.pages.forEach(page => {
       this.cssString += `
-#${page.toLowerCase()} {}
+#${page.name.toLowerCase()} {}
 `
     })
 
     this.components.forEach(component => {
       this.cssString += `
-.${component.toLowerCase()} {}
+.${component.name.toLowerCase()} {}
 `
+    })
+
+    this.textStyles.forEach(textStyle => {
+      if (textStyle.name.includes("headings")) {
+        const headingParts = textStyle.name.split("/");
+        const heading = headingParts[headingParts.length - 1];
+        const styleToString = (style) => {
+          return Object.keys(style).reduce((acc, key) => (
+              acc + key.split(/(?=[A-Z])/).join('-').toLowerCase() + ':' + style[key] + ';\n'
+          ), '');
+          
+        };
+        const stylePropertyString = styleToString(textStyle.style);
+        this.cssString += `
+${heading.toLowerCase()} {
+${stylePropertyString}
+}
+` 
+      } else {
+        this.cssString += `
+.${textStyle.name.toLowerCase()} {}
+` 
+      }
     })
     this.outputCSS();
     console.log(this.pages);
