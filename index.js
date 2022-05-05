@@ -71,9 +71,17 @@ body {
     })
 
     this.components.forEach(component => {
-      this.cssString += `
+      if (component.name.includes("button")) {
+        this.cssString += `
+button,
 .${component.name.toLowerCase()} {}
 `
+      } else {
+        this.cssString += `
+.${component.name.toLowerCase()} {}
+`
+      }
+
     })
 
     this.textStyles.forEach(textStyle => {
